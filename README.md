@@ -107,7 +107,7 @@ def translate(text): # 翻译接口函数，返回格式化结果
     # 预估耗时并作限制
     sents = [get_translation_sentences(get_translation_data(texts[index], dictionary)) for index in range(len(texts))]
     etime = get_estimated_time(sum(sents, []))
-    if etime > 60: return [[{ "original": text, "translation": "难以计算，请缩短输入或升级机器。（当前设备：" + str(device) + "，预计耗时：" + str(round(etime)) + "s）", "dictionary": dictionary }]]
+    if etime > 60: return [[{ "original": text, "translation": f"难以计算，请缩短输入或升级机器。（当前设备：{str(device)}，预计耗时：{str(round(etime))}s）", "dictionary": dictionary }]]
     # ---------------
     results = []
     for index in range(len(texts)):
