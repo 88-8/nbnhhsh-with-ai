@@ -18,7 +18,7 @@
 }]
 ```
 
-# Code
+# Demo
 加载语言模型：
 ```
 import torch
