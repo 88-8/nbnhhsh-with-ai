@@ -1,10 +1,12 @@
-> 待完善...
+> 初步构想，待完善...
 
 # Description
-🤖「能不能好好说话？」辅以语言模型的构想 https://github.com/itorr/nbnhhsh
+🤖「能不能好好说话？」拼音首字母缩写~~查词~~翻译工具
+
+https://github.com/itorr/nbnhhsh
 
 # Sample
-```
+```javascript
 [{
 	'original': 'DL是ML的一个分支。',
 	'translation': ['深度学习是机器学习的一个分支。', 'deadline是机器学习的一个分支。'],
@@ -20,7 +22,7 @@
 
 # Demo
 加载语言模型：
-```
+```python
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
@@ -35,24 +37,23 @@ def load_model(path):
 tokenizer, model = load_model("uer/gpt2-chinese-cluecorpussmall")
 ```
 加载相关函数：
-```
+```python
 import math, requests, json, re, itertools, time
 
-def query(text):
-    # 提交到nbnhhsh项目查询，提交内容仅包含字母及数字序列，剔除顺序、大小写等信息，保证隐私安全
+def query(text): # 提交到nbnhhsh项目查询，提交内容仅包含字母及数字序列，剔除顺序、大小写等信息，保护隐私安全
     query = ",".join(list(set(re.findall("[A-Za-z0-9]{2,10}", text)))).lower()
     if not query: return {}
     response = requests.post("https://lab.magiconch.com/api/nbnhhsh/guess", headers={"Content-Type":"application/json"}, data=json.dumps({"text":query}))
     results = json.loads(response.text)
     dictionary = {}
     for data in results:
-        if "trans" in data: # 释义（用户上传）
+        if "trans" in data: # 释义（用户提交）
             dictionary[data["name"]] = data["trans"]
         elif "inputting" in data: # 猜测（程序推测）（无用户提交数据时，会作为拼音首字母、词组首字母查询）
             dictionary[data["name"]] = data["inputting"]
     return dictionary
 
-def get_perplexity_score(sentence):
+def get_perplexity_score(sentence): # 适用于huggingface的困惑度评分
     tokenize_input = tokenizer.tokenize(sentence)
     tensor_input = torch.tensor([tokenizer.convert_tokens_to_ids(tokenize_input)]).to(device)
     if tensor_input.size()[1] <= 0: return None
@@ -65,8 +66,7 @@ def get_perplexity_ranking(sentences):
     result.sort(key=lambda data: data[1])
     return result
 
-def get_translation_data(text, dictionary):
-    # 翻译标记数据，例：[[DL,深度学习,下载,地理],是,[ML,机器学习,毫升],的一个分支]
+def get_translation_data(text, dictionary): # 翻译标记数据，例：[[DL,深度学习,下载,地理],是,[ML,机器学习,毫升],的一个分支]
     data = [str(text)]
     for key in reversed(sorted(dictionary.keys(), key=len)):
         if len(dictionary[key]) < 1: continue
@@ -131,8 +131,8 @@ def translate(text): # 翻译接口函数，返回格式化结果
         results.append({ "original": text, "translation": translation, "dictionary": dic })
     return results
 ```
-运行测试：
-```
+开始运行测试：
+```python
 print(translate('你要同我做AI吗？NLP还是CV？'))
-print(translate('jmm冲啊这个nc真的无敌好喝到翘jiojio！'))
+print(translate('jmm冲啊这个nc真的无敌好喝到翘jiojio！！！'))
 ```
