@@ -1,4 +1,5 @@
 > 初步构想，待完善...
+> TODO: Beam Search
 
 # Description
 🤖「能不能好好说话？」拼音首字母缩写~~查词~~翻译工具
